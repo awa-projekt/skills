@@ -1,0 +1,73 @@
+{
+  "skill_name": "langgraph-workflows",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In our LangGraph service, add a review agent that checks the triage agent's proposed ticket fields against the MCP server's validate_fields tool and sends faults back to triage, at most two rounds. The MCP server URL differs per eval case.",
+      "expected_output": "A review agent in its own module, built once and composed into the graph, with the MCP server taken from the run's context and the loop capped.",
+      "files": [],
+      "expectations": [
+        "The review agent lives in its own file with its prompt, tools, response schema and build function",
+        "create_agent is called with name=",
+        "The review agent has ModelCallLimitMiddleware(run_limit=...)",
+        "The verdicts in the response schema are a Literal of allowed values",
+        "The MCP URL comes from the run's context (context_schema / Runtime / McpTools), not from a global or a per-run build",
+        "The review agent gets an allowlist of MCP tool names",
+        "The graph caps the rounds and says what happens at the cap",
+        "Nothing imports langchain_mcp_adapters or langgraph_supervisor"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our node function builds the triage agent on every call because the MCP URL changes per eval case. It works but it's slow. Fix it.",
+      "expected_output": "The agent is built once with the graph; the per-case MCP URL arrives through the run's context.",
+      "files": [],
+      "expectations": [
+        "The agent is built once, outside the node, when the graph is built",
+        "The MCP URL is passed per run with invoke(..., context=...)",
+        "The agent reads the URL per call through middleware (e.g. McpTools(lambda context: context.mcp_url, ...)) or ToolRuntime.context",
+        "No global registry, lazy wrapper or tool cache is introduced",
+        "The graph and the agent share one context_schema"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Persist our LangGraph runs in Postgres and pause for a human before the agent's approved refund is booked in the billing system.",
+      "expected_output": "AsyncPostgresSaver on a configured pool in its own schema, a serializer allowlist, and the booking done by code after an interrupt.",
+      "files": [],
+      "expectations": [
+        "Uses AsyncPostgresSaver on a pool with autocommit=True, row_factory=dict_row and prepare_threshold=0",
+        "The checkpoint tables live in a schema of their own",
+        "The serializer allow-lists the state's types and LANGGRAPH_STRICT_MSGPACK=true is set or recommended",
+        "The booking runs in deterministic code after approval (interrupt() or HumanInTheLoopMiddleware), not as a tool the model calls at will",
+        "Only the outermost graph gets the checkpointer",
+        "A test asserts the interrupt and resumes with Command(resume=...) on the same thread_id"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Switch our agents to the gpt-5 deployment on our Azure OpenAI resource.",
+      "expected_output": "ChatOpenAI against the Azure v1 endpoint.",
+      "files": [],
+      "expectations": [
+        "Uses ChatOpenAI with base_url=<endpoint>/openai/v1/",
+        "Sets use_responses_api=True",
+        "Does not use AzureChatOpenAI",
+        "Does not set api_version"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Write unit tests for our supervisor graph (supervisor + triage subagent that uses MCP tools) that run without an API key.",
+      "expected_output": "Offline tests with a scripted model and an in-process FastMCP fake that uses the real tool names.",
+      "files": [],
+      "expectations": [
+        "Uses a scripted model whose answer is a function of the conversation, not a fixed replay list",
+        "Fakes the MCP server in process with the real tool names and payload shapes",
+        "Asserts the number of model calls per run",
+        "Covers structured output on both the tool and the native path",
+        "Checks the subagent receives only its task"
+      ]
+    }
+  ]
+}

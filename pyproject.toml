@@ -1,0 +1,31 @@
+# Not a package: the environment the skills' examples and check scripts are tested in.
+# The versions are the ones the skills are written for; raise them together with the skills.
+[project]
+name = "agent-skills"
+version = "1.1.0"
+requires-python = ">=3.13"
+license = "Apache-2.0"
+authors = [{ name = "awa-projekt", email = "info@ancud.de" }]
+dependencies = [
+    "fastapi>=0.120",
+    "fastmcp>=4.0.11,<5",
+    "langchain[mcp]>=1.4.3,<2",
+    "langchain-openai>=1.4.0",
+    "langgraph>=1.2.14,<2",
+    "pytest>=9",
+    "uvicorn>=0.38",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["skills"]
+pythonpath = [
+    "skills/langgraph-workflows/examples",
+    "skills/langgraph-workflows/scripts",
+    "skills/mcp-servers/examples",
+    "skills/mcp-servers/scripts",
+]
+addopts = "-p no:cacheprovider"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::langchain_core._api.beta_decorator.LangChainBetaWarning"]

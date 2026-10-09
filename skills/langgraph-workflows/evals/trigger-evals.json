@@ -1,0 +1,19 @@
+[
+  {"query": "add a reviewer agent to our langgraph graph that loops back to the triage agent up to twice", "should_trigger": true},
+  {"query": "the subagent gets the whole supervisor conversation and it's confusing it, can you make it only see its task", "should_trigger": true},
+  {"query": "our create_agent sometimes ends without structured_response, what's going on and how do we guard against it", "should_trigger": true},
+  {"query": "set up AsyncPostgresSaver for the ticket graph and make runs resume after a pod restart", "should_trigger": true},
+  {"query": "wire the MCP tools into our agent so each eval case can point at its own server", "should_trigger": true},
+  {"query": "review my PR: it adds a StateGraph with three agents and a Send fan-out", "should_trigger": true},
+  {"query": "stream the agent's tool calls to the frontend over A2A while the graph runs", "should_trigger": true},
+  {"query": "write offline tests for our orchestrator graph, no API key in CI", "should_trigger": true},
+  {"query": "we use AzureChatOpenAI with api_version 2025-xx, upgrade the model setup to the new endpoint", "should_trigger": true},
+  {"query": "should we use a supervisor or handoffs for our customer-support assistant? we haven't written any code yet", "should_trigger": false},
+  {"query": "add a new tool to our FastMCP server that returns a ticket's open fields", "should_trigger": false},
+  {"query": "build a LangSmith dataset and an LLM-as-judge evaluator for our triage agent", "should_trigger": false},
+  {"query": "chunk these PDFs with a recursive text splitter and put them in pgvector for retrieval", "should_trigger": false},
+  {"query": "explain the difference between LangChain and LlamaIndex for a blog post", "should_trigger": false},
+  {"query": "our MCP server's search tool description confuses the agent, improve the docstring and the return fields", "should_trigger": false},
+  {"query": "write a FastAPI endpoint that lists all tickets with pagination", "should_trigger": false},
+  {"query": "compare token costs of single-agent vs multi-agent for our use case and recommend one", "should_trigger": false}
+]

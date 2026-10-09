@@ -1,0 +1,63 @@
+{
+  "skill_name": "agent-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We want agents that read supplier emails, extract order changes and update our ERP. A colleague proposes a classifier agent, an extraction agent and an ERP agent. Is that the right architecture?",
+      "expected_output": "Start from a workflow or single-agent baseline; the classifier is a router step; ERP writes run in code after approval.",
+      "files": [],
+      "expectations": [
+        "Recommends starting from a baseline (workflow in code or a single agent) and measuring it on real tasks",
+        "Treats classification as a router or workflow step unless it makes a runtime decision",
+        "The ERP update runs in deterministic code or behind approval, not as an agent's free action",
+        "Asks for or proposes caps and a defined outcome at each cap",
+        "Does not endorse three agents without an eval result that justifies them"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our research agent's context blows up because search returns 40 full documents per call. Should we split it into several specialist agents?",
+      "expected_output": "Fix context first: trim or offload results; then a read-only subagent with a short report; specialists last.",
+      "files": [],
+      "expectations": [
+        "First trims or offloads the tool results (or bounds them on the server)",
+        "Then suggests moving the noisy read-only part into a subagent that returns a short report",
+        "Does not recommend splitting by role as the first step"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review this proposal: a planner agent passes a summary to a coder agent, which passes one to a tester agent, which passes one to a reviewer agent; the loop runs until the reviewer approves.",
+      "expected_output": "Split by context, not role; pass reports on unchanged; the loop needs a cap and a deterministic check.",
+      "files": [],
+      "expectations": [
+        "Names the role chain as costly coordination (split by context, not by role)",
+        "Flags the summaries passed between agents (telephone game) and recommends structured reports passed on unchanged",
+        "Flags the uncapped loop and asks what happens at the cap",
+        "Prefers a deterministic check (tests) over an LLM reviewer as the loop's exit"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Classifying invoices into 5 cost centres must be very reliable. Should two agents debate the answer?",
+      "expected_output": "Parallel samples with a majority vote, or a deterministic check, rather than debate.",
+      "files": [],
+      "expectations": [
+        "Recommends parallel samples and a majority vote instead of debate",
+        "Mentions measuring against real labelled invoices"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Write down the architecture decision for our ticket-triage graph: triage and review agents in an evaluator-optimizer loop, max 2 rounds, MCP tools, results reviewed by a person before they're saved.",
+      "expected_output": "A decision record in the DECISION-RECORD.md format.",
+      "files": [],
+      "expectations": [
+        "States the baseline and its eval score (or marks it as missing)",
+        "Has one row per decision from DECISION-RECORD.md (coordination, task assignment, ..., side effects)",
+        "Failure handling names the 2-round cap and what happens at it",
+        "Side effects say the person approves and code saves"
+      ]
+    }
+  ]
+}

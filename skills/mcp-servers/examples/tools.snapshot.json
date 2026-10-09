@@ -1,0 +1,361 @@
+[
+  {
+    "name": "get_ticket_details",
+    "title": "Get ticket",
+    "description": "One ticket with its title and fields.\n\nUse it to read a ticket before suggesting values for it. To find a ticket by its title, use\nfind_tickets instead. Returns the ticket number, the title, and category, priority and team;\na field with no value yet is null.",
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ticket_id": {
+          "description": "Ticket number, e.g. '000042' or '42'.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ticket_id"
+      ]
+    },
+    "outputSchema": {
+      "properties": {
+        "ticket_id": {
+          "description": "Six-digit ticket number, e.g. '000042'.",
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "fields": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "category, priority and team; null where not set yet.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "title",
+        "fields"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "find_tickets",
+    "title": "Find tickets",
+    "description": "Tickets whose title contains the query, at most 20 per page. Use it to find a ticket number; to read one ticket, use get_ticket_details. Returns `tickets`, `next_cursor` for the next page, and a `note` when more tickets match than one page holds.",
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "description": "Part of the ticket title, e.g. 'login'.",
+          "minLength": 2,
+          "type": "string"
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "next_cursor of the previous page; omit for the first page."
+        }
+      },
+      "required": [
+        "query"
+      ]
+    },
+    "outputSchema": {
+      "properties": {
+        "tickets": {
+          "items": {
+            "properties": {
+              "ticket_id": {
+                "description": "Six-digit ticket number, e.g. '000042'.",
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "fields": {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "description": "category, priority and team; null where not set yet.",
+                "type": "object"
+              }
+            },
+            "required": [
+              "ticket_id",
+              "title",
+              "fields"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Pass as `cursor` for the next page; null on the last page."
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Says how to narrow the query when results were cut."
+        }
+      },
+      "required": [
+        "tickets",
+        "next_cursor"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "validate_ticket_fields",
+    "title": "Validate ticket fields",
+    "description": "Checks values the way suggest_ticket_fields would store them, without writing anything.\n\nUse it on values you are about to suggest. Returns `ok` and, per field, the value as the\nticket system stores it or one sentence per error.",
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "values": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "Values keyed by field (category, priority, team), e.g. {\"category\": \"access\", \"priority\": 2}.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "values"
+      ]
+    },
+    "outputSchema": {
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "fields": {
+          "additionalProperties": {
+            "properties": {
+              "ok": {
+                "type": "boolean"
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "The value as the ticket system stores it."
+              },
+              "errors": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "ok",
+              "value",
+              "errors"
+            ],
+            "type": "object"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "ok",
+        "fields"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "suggest_ticket_fields",
+    "title": "Suggest ticket fields",
+    "description": "Writes values into a ticket as suggestions for a person to approve.\n\nFields already approved are not overwritten. Returns `written`, the fields that now hold\nyour value, and `skipped`, each other field with a reason: unknown_field, approved or\ninvalid_value. Check values with validate_ticket_fields first.",
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ticket_id": {
+          "description": "Ticket number, e.g. '000042' or '42'.",
+          "type": "string"
+        },
+        "values": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "Values keyed by field (category, priority, team), e.g. {\"category\": \"access\", \"priority\": 2}.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "values"
+      ]
+    },
+    "outputSchema": {
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "written": {
+          "description": "Fields that now hold the suggested value, awaiting approval.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "skipped": {
+          "description": "Fields that were not written, each with its reason.",
+          "items": {
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "reason": {
+                "enum": [
+                  "unknown_field",
+                  "approved",
+                  "invalid_value"
+                ],
+                "type": "string"
+              },
+              "detail": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "field",
+              "reason",
+              "detail"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "written",
+        "skipped"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  }
+]

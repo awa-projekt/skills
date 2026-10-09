@@ -1,0 +1,70 @@
+{
+  "skill_name": "mcp-servers",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Expose our FastAPI service's ticket search and the 'set fields' write as MCP tools so our LangGraph agents can use them. The service already has a service layer.",
+      "expected_output": "A FastMCP server mounted into the FastAPI app, thin tools over the service layer, following the tool design rules.",
+      "files": [],
+      "expectations": [
+        "Mounts mcp.http_app(path=\"/\") into the FastAPI app and wraps mcp_app.lifespan in the app's lifespan",
+        "Uses stateless_http=True",
+        "Tools call the existing service layer; no business logic in the tools",
+        "Every parameter is Annotated[..., Field(description=...)]",
+        "Tools return Pydantic models",
+        "Every tool sets a title and all four annotations",
+        "The write tool stores suggestions, not approved values, and reports skipped fields with reasons",
+        "No name= override; the function name is the tool name",
+        "The return shape is described in the description body, not only in a Returns: section"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The agent keeps calling get_ticket with ids like '42' and just gets 'Error calling tool'. Fix the MCP server so the agent can recover.",
+      "expected_output": "Lenient id normalization and domain errors mapped to ToolError with a next step.",
+      "files": [],
+      "expectations": [
+        "Normalizes identifiers leniently (e.g. '42' -> '000042')",
+        "Maps the not-found domain exception to ToolError once (decorator), with a message saying what to do next",
+        "Keeps mask_error_details=True for other exceptions",
+        "Does not turn the error into an empty result"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Add tests for our MCP server.",
+      "expected_output": "In-memory fastmcp.Client tests, a list_tools snapshot, and the check script.",
+      "files": [],
+      "expectations": [
+        "Tests the MCP layer in memory with fastmcp.Client(mcp)",
+        "Checks isError for a domain error",
+        "Snapshots list_tools() names, descriptions and schemas",
+        "Runs or recommends scripts/check_tools.py",
+        "Tests the service against a real Postgres rather than mocked SQL, or says why not"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Should our MCP server keep the user's draft in session state between tool calls so the agent doesn't have to pass it around?",
+      "expected_output": "No: explicit handles, stateless HTTP.",
+      "files": [],
+      "expectations": [
+        "Recommends an explicit handle (e.g. a draft id) the agent passes back",
+        "Mentions that session state breaks with stateless HTTP or several replicas",
+        "Does not recommend server-side session state"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Our search tool returns all 3,000 matching tickets and the agent's context overflows.",
+      "expected_output": "A bounded result with a default limit, a cursor and a truncation note.",
+      "files": [],
+      "expectations": [
+        "Adds a default limit",
+        "Adds a cursor or pagination",
+        "Adds a note that says how to narrow the query when results were cut",
+        "Returns the list inside a Pydantic model"
+      ]
+    }
+  ]
+}

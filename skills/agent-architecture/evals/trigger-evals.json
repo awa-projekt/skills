@@ -1,0 +1,15 @@
+[
+  {"query": "we're planning an agent that answers supplier emails, should this be one agent or several?", "should_trigger": true},
+  {"query": "is a supervisor with subagents overkill for our invoice extraction pipeline?", "should_trigger": true},
+  {"query": "review this architecture proposal for our research assistant: planner, 4 workers, a critic", "should_trigger": true},
+  {"query": "our single agent has 25 tools and keeps picking the wrong one, should we split it into specialists?", "should_trigger": true},
+  {"query": "handoffs or a router for a support chatbot where billing and tech specialists talk to the customer?", "should_trigger": true},
+  {"query": "should the reviewer be an LLM judge or should we run the tests in the loop?", "should_trigger": true},
+  {"query": "write down why we picked an evaluator-optimizer for the ticket-triage graph", "should_trigger": true},
+  {"query": "add a reducer to the findings key so the parallel branches don't overwrite each other", "should_trigger": false},
+  {"query": "implement the supervisor we agreed on in LangGraph with create_agent", "should_trigger": false},
+  {"query": "add annotations and a title to every tool on our MCP server", "should_trigger": false},
+  {"query": "our microservice architecture has too many services, should we merge some?", "should_trigger": false},
+  {"query": "fix the failing pytest in test_checkout.py", "should_trigger": false},
+  {"query": "set up Postgres checkpointing for the graph", "should_trigger": false}
+]

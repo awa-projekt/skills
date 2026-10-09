@@ -1,0 +1,25 @@
+stages:
+  - check
+
+variables:
+  UV_CACHE_DIR: .uv-cache
+
+cache:
+  key: uv
+  paths:
+    - .uv-cache
+
+# Every skill's frontmatter and layout, against the Agent Skills spec.
+validate-skills:
+  stage: check
+  image: ghcr.io/astral-sh/uv:python3.14-bookworm
+  script:
+    - for skill in skills/*/; do uvx --from "git+https://github.com/agentskills/agentskills#subdirectory=skills-ref" skills-ref validate "$skill"; done
+
+# The skills' examples and check scripts.
+test-examples:
+  stage: check
+  image: ghcr.io/astral-sh/uv:python3.14-bookworm
+  script:
+    - uv sync --locked
+    - uv run pytest

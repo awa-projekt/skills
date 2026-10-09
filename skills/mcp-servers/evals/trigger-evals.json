@@ -1,0 +1,17 @@
+[
+  {"query": "add an MCP tool to our ticket service that returns a ticket's open fields", "should_trigger": true},
+  {"query": "the agent keeps misusing search_tickets, rewrite the tool's description and return fields", "should_trigger": true},
+  {"query": "mount our FastMCP server into the existing FastAPI app under /mcp", "should_trigger": true},
+  {"query": "review this @mcp.tool function before I merge it", "should_trigger": true},
+  {"query": "our MCP server leaks stack traces to the agent when the DB is down, fix error handling", "should_trigger": true},
+  {"query": "write tests for the ticket MCP server", "should_trigger": true},
+  {"query": "upgrade the server from fastmcp 3 to fastmcp 4", "should_trigger": true},
+  {"query": "add token auth to our MCP server so only the agent service can call it", "should_trigger": true},
+  {"query": "connect our langgraph agent to the ticket MCP server and retry when it's down", "should_trigger": false},
+  {"query": "add a REST endpoint to the FastAPI app that exports tickets as CSV", "should_trigger": false},
+  {"query": "configure my coding agent to use the GitHub MCP server", "should_trigger": false},
+  {"query": "which multi-agent pattern should we use for document review?", "should_trigger": false},
+  {"query": "write a pydantic model for the ticket table and an alembic migration", "should_trigger": false},
+  {"query": "our agent's prompt makes it pick the wrong similar ticket, improve the prompt", "should_trigger": false},
+  {"query": "explain what the Model Context Protocol is to our product manager", "should_trigger": false}
+]
